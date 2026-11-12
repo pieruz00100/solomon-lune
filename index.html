@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="it"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0b1026"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><title>Lune e Costellazioni dell’Impostore</title>
+<style>
+:root{--bg:#0b1026;--card:#141a3a;--tx:#e9ecf8;--mut:#9aa3c7;--ac:#f2b53c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#0b1026}}
+*{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Georgia,serif;padding:14px;max-width:980px;margin:auto}
+h1{font-size:1.3rem;margin:4px 0 12px;color:var(--ac)}h2{font-size:1rem;margin:0 0 8px;color:var(--ac)}
+.grid{display:grid;grid-template-columns:1fr;gap:14px}@media(min-width:800px){.grid{grid-template-columns:1fr 1fr}}
+.card{background:var(--card);border-radius:12px;padding:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:6px 0}
+label{font-size:.85rem;color:var(--mut)}
+input[type=number]{width:54px;padding:6px;border-radius:6px;border:1px solid #394075;background:#0b1026;color:var(--tx);font-size:1rem}
+input[type=text]{width:70px;padding:4px;border-radius:6px;border:1px solid #394075;background:#0b1026;color:var(--tx)}
+button{background:#2a3170;color:var(--tx);border:1px solid #4a54a8;border-radius:8px;padding:8px 12px;font-size:.9rem;cursor:pointer}
+button.on{background:var(--ac);color:#111}
+.eff{display:grid;grid-template-columns:1fr;gap:6px;margin-top:8px}
+.eff div{padding:8px;border-radius:8px;background:#0b1026;font-size:.9rem;border-left:4px solid}
+.eff b{font-size:1.05rem}svg{width:100%;height:auto;display:block}
+.cs{transition:transform .2s}.m{transition:transform .9s ease}
+small{color:var(--mut)}.hide{display:none}.tabs{display:flex;gap:8px;margin-bottom:12px}.tabs button{flex:1;padding:10px}.box{background:#0b1026;border-radius:10px;padding:8px;text-align:center}.big{font-size:1.6rem;font-weight:700;color:#f2b53c}.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}textarea{width:100%;min-height:140px;background:#0b1026;color:#e9ecf8;border:1px solid #394075;border-radius:8px;padding:8px;font:inherit;font-size:.9rem}input.w{width:100%;padding:6px;border-radius:6px;border:1px solid #394075;background:#0b1026;color:#e9ecf8;font-size:1rem}.sk{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:6px 8px;background:#0b1026;border-radius:6px;font-size:.88rem}.sk button{padding:2px 8px}
+</style></head><body>
+<h1>🌙 Lune e Costellazioni dell’Impostore</h1>
+<div class="tabs"><button id="tb1" class="on" onclick="Dtab(1)">🌙 Lune e costellazioni</button><button id="tb3" onclick="Dtab(3)">📜 Scheda</button><button id="tb2" onclick="Dtab(2)">⭐ Druido delle Stelle</button></div>
+<div class="grid">
+<div class="card t1">
+<h2>Lune</h2>
+<div class="row">
+<label>⚪ Bianca <input type="number" id="d0" min="1" max="8" value="1"></label>
+<label>🔴 Rossa <input type="number" id="d1" min="1" max="8" value="1"></label>
+<label>⚫ Nera <input type="number" id="d2" min="1" max="8" value="1"></label>
+</div>
+<div class="row">
+<button id="roll">🎲 Tira 3d8</button>
+<button id="prev">◀ −1 giorno</button>
+<button id="next">+1 giorno ▶</button>
+<small id="day"></small>
+</div>
+<svg id="wheel" viewBox="0 0 460 460"></svg>
+<div class="eff" id="eff"></div>
+<details style="margin-top:8px"><summary><small>Imposta caselle di Piena / Nuova per ogni luna</small></summary>
+<div id="cfg" class="row"></div>
+<small>Valori separati da virgola. Predefiniti letti dalla tabella: aggiusta se il master li ha cambiati.</small></details>
+</div>
+<div class="card t1">
+<h2>Costellazioni dell’Impostore</h2>
+<div class="row">
+<button data-c="0" class="on">Arciere</button><button data-c="1">Calice</button><button data-c="2">Drago</button>
+<button id="mir" class="on">Specchiata</button>
+</div>
+<svg id="sky" viewBox="0 0 300 300"></svg>
+<p id="cd" style="font-size:.9rem;margin:6px 0 0"></p>
+</div>
+<div class="card t1" style="grid-column:1/-1">
+<h2>Tutte le costellazioni (88)</h2>
+<div class="row"><label>Scegli: <select id="all" style="padding:6px;border-radius:6px;background:#0b1026;color:#e9ecf8;border:1px solid #394075;font-size:1rem"></select></label><small>🐾 = ha una forma bestiale 5e</small></div>
+<div class="grid"><div><svg id="sky2" viewBox="0 0 300 300"></svg><small id="note"></small></div><div id="beast"></div></div>
+</div>
+<div class="card t2 hide" style="grid-column:1/-1" id="druid"></div>
+<div class="card t3 hide" style="grid-column:1/-1" id="sheet"></div>
+</div>
+<script>
+var NAMES=["Bianca (Solinari)","Rossa (Lunitari)","Nera (Nuitari)"],EFF=["Tiro per Colpire","CD degli incantesimi","Danni"],COL=["#e8ecf5","#d23a3a","#8a74c9"],R=[190,145,100];
+var cfg=[{f:[8],n:[1,2]},{f:[1],n:[4,5]},{f:[5,6],n:[1,2]}];
+var pos=[1,1,1],ang=[0,0,0],day=0;
+var $=function(i){return document.getElementById(i)};
+function cen(c){return c.f[0]+(c.f.length-1)/2}
+function ang0(i,p){return (cen(cfg[i])-p)*45}
+function cd(a,b){var d=Math.abs(a-b)%8;return Math.min(d,8-d)}
+function state(i){var p=pos[i];if(cfg[i].f.indexOf(p)>-1)return 1;if(cfg[i].n.indexOf(p)>-1)return -1;return 0}
+function moon(i,x,y,p){var r=13,c=cen(cfg[i]),d=cd(p,c),il=(1+Math.cos(Math.PI*d/4))/2,wax=((c-p+8)%8)<4&&p!==c;
+var s=2*r*il,dx=wax?-s:s,id="cl"+i;
+return '<g transform="translate('+x+','+y+')"><clipPath id="'+id+'"><circle r="'+r+'"/></clipPath><circle r="'+r+'" fill="'+COL[i]+'" stroke="#f2b53c" stroke-width="1.5"/><circle cx="'+dx+'" r="'+r+'" fill="#10142e" clip-path="url(#'+id+')" opacity="'+(il<.02?1:.93)+'"/></g>'}
+function build(){var h='<circle cx="230" cy="230" r="215" fill="#10142e"/>';
+for(var i=0;i<3;i++){h+='<circle cx="230" cy="230" r="'+R[i]+'" fill="none" stroke="'+COL[i]+'" stroke-opacity=".5" stroke-width="22"/>';
+for(var p=1;p<=8;p++){var a=ang0(i,p)*Math.PI/180,x=230+R[i]*Math.sin(a),y=230-R[i]*Math.cos(a),f=cfg[i].f.indexOf(p)>-1,n=cfg[i].n.indexOf(p)>-1;
+h+='<text x="'+x+'" y="'+(y+4)+'" text-anchor="middle" font-size="12" fill="'+(f?"#f2b53c":n?"#6fb8ff":"#fff")+'" font-weight="'+(f||n?700:400)+'">'+p+'</text>'}}
+h+='<text x="230" y="20" text-anchor="middle" fill="#f2b53c" font-size="13">PIENA · Impostore</text><text x="230" y="452" text-anchor="middle" fill="#6fb8ff" font-size="13">NUOVA · Scorpione</text><text x="230" y="226" text-anchor="middle" fill="#9aa3c7" font-size="11">Giorno</text><text id="dn" x="230" y="246" text-anchor="middle" fill="#fff" font-size="20">0</text>';
+for(var i=0;i<3;i++)h+='<g class="m" id="g'+i+'" style="transform-origin:230px 230px"><g transform="translate(230,'+(230-R[i])+')"><g id="u'+i+'" class="m"></g></g></g>';
+$("wheel").innerHTML=h;ang=[0,0,0];upd()}
+function upd(){var e="";for(var i=0;i<3;i++){var p=pos[i],t=ang0(i,p),dl=((t-ang[i]+540)%360)-180;ang[i]+=dl;
+var g=$("g"+i);g.style.transform="rotate("+ang[i]+"deg)";
+var u=$("u"+i);u.style.transform="rotate("+(-ang[i])+"deg)";u.innerHTML=moon(i,0,0,p).replace('translate(0,0)','translate(0,0)');
+var s=state(i);
+e+='<div style="border-color:'+COL[i]+'"><b>'+NAMES[i]+'</b> · casella '+p+' → '+(s==1?"Luna nell’Impostore (piena)":s==-1?"Luna nello Scorpione (nuova)":"fase intermedia")+'<br>'+EFF[i]+': <b>'+(s>0?"+1":s<0?"−1":"nessun effetto")+'</b></div>'}
+$("eff").innerHTML=e;$("dn").textContent=day;$("day").textContent=""}
+function setIn(){for(var i=0;i<3;i++){var v=Math.max(1,Math.min(8,parseInt($("d"+i).value)||1));pos[i]=v;$("d"+i).value=v}upd()}
+for(var i=0;i<3;i++)$("d"+i).addEventListener("input",setIn);
+$("roll").onclick=function(){for(var i=0;i<3;i++)$("d"+i).value=1+Math.floor(Math.random()*8);day=0;setIn()};
+function step(k){day+=k;for(var i=0;i<3;i++){pos[i]=((pos[i]-1+k+80)%8)+1;$("d"+i).value=pos[i]}upd()}
+$("next").onclick=function(){step(1)};$("prev").onclick=function(){step(-1)};
+var ch="";for(var i=0;i<3;i++)ch+='<div style="width:100%"><small>'+NAMES[i]+'</small> Piena <input type="text" data-i="'+i+'" data-k="f" value="'+cfg[i].f+'"> Nuova <input type="text" data-i="'+i+'" data-k="n" value="'+cfg[i].n+'"></div>';
+$("cfg").innerHTML=ch;
+$("cfg").addEventListener("change",function(e){var t=e.target,v=t.value.split(",").map(function(x){return parseInt(x)}).filter(function(x){return x>=1&&x<=8});if(!v.length)return;cfg[t.dataset.i][t.dataset.k]=v;var p=pos.slice(),d=day;build();pos=p;day=d;upd()});
+/* costellazioni */
+var CS=[{n:"Arciere",s:[[60,230],[110,170],[150,130],[200,80],[235,50],[175,150],[130,215],[225,120]],l:[[0,1],[1,2],[2,3],[3,4],[2,5],[5,6],[1,6],[3,7],[7,5]],d:"Arciere: puoi usare l’azione bonus per un attacco con incantesimo a distanza, +1d8+modificatore di Saggezza."},
+{n:"Calice",s:[[90,70],[210,70],[110,130],[190,130],[150,170],[150,225],[100,250],[200,250]],l:[[0,2],[2,4],[4,3],[3,1],[0,1],[4,5],[5,6],[5,7]],d:"Calice: quando lanci un incantesimo che cura con slot, tu o un alleato entro 9 m recuperate 1d8+Saggezza PF."},
+{n:"Drago",s:[[40,230],[85,190],[120,215],[165,175],[140,120],[185,75],[235,60],[255,100],[215,115]],l:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,7],[7,8],[8,5]],d:"Drago: nei tiri di Intelligenza, Saggezza e Concentrazione un risultato inferiore a 10 vale 10."}];
+var cur=0,mir=true;
+function sky(){var c=CS[cur],h='<rect width="300" height="300" rx="10" fill="#070a1c"/><g class="cs" style="transform-origin:150px 150px;transform:scaleX('+(mir?-1:1)+')">';
+c.l.forEach(function(l){h+='<line x1="'+c.s[l[0]][0]+'" y1="'+c.s[l[0]][1]+'" x2="'+c.s[l[1]][0]+'" y2="'+c.s[l[1]][1]+'" stroke="#f2b53c" stroke-opacity=".6"/>'});
+c.s.forEach(function(p){h+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="#fff"/><circle cx="'+p[0]+'" cy="'+p[1]+'" r="9" fill="#f2b53c" opacity=".2"/>'});
+$("sky").innerHTML=h+'</g><text x="150" y="292" text-anchor="middle" fill="#9aa3c7" font-size="12">'+(mir?"Impostore · ":"")+c.n+'</text>';$("cd").textContent=c.d}
+document.querySelectorAll("[data-c]").forEach(function(b){b.onclick=function(){cur=+b.dataset.c;document.querySelectorAll("[data-c]").forEach(function(x){x.classList.toggle("on",x===b)});sky()}});
+$("mir").onclick=function(){mir=!mir;this.classList.toggle("on",mir);sky();all()};
+/* tutte le costellazioni + bestie 5e (SRD) */
+var B={wolf:["Lupo","1/4",13,"11 (2d8+2)","12 m",[12,15,12,3,12,6],"Udito e olfatto acuti; Tattiche di branco","Morso +4, 2d4+2 perforanti; CD 11 For o prono"],
+ bbear:["Orso nero","1/2",11,"19 (3d8+6)","12 m, scalare 9 m",[15,10,14,2,12,7],"Olfatto acuto","Multiattacco: morso +3 1d6+2, artigli +3 2d4+2"],
+ bear:["Orso bruno","1",11,"34 (4d10+12)","12 m, scalare 9 m",[19,10,16,2,13,7],"Olfatto acuto","Multiattacco: morso +6 1d8+4, artigli +6 2d6+4"],
+ lion:["Leone","1",12,"26 (4d10+4)","15 m",[17,15,13,3,12,8],"Olfatto acuto; Tattiche di branco; Balzo (CD 13 For o prono + morso bonus); Salto in corsa","Morso +5 1d8+3; artiglio +5 1d6+3"],
+ panther:["Pantera","1/4",12,"13 (3d8)","15 m, scalare 12 m",[14,15,10,3,14,7],"Olfatto acuto; Balzo (CD 12 For o prono + artiglio bonus)","Morso +4 1d6+2; artiglio +4 1d4+2"],
+ geagle:["Aquila gigante","1",13,"26 (4d10+4)","3 m, volare 24 m",[16,17,13,8,14,10],"Vista acuta","Multiattacco: becco +5 1d6+3, artigli +5 2d6+3"],
+ raven:["Corvo","0",12,"1 (1d4-1)","3 m, volare 15 m",[2,14,8,2,12,6],"Mimetismo","Becco +4 1d4+2"],
+ ggoat:["Capra gigante","1/2",11,"19 (3d10+3)","12 m",[17,11,12,3,12,6],"Carica (+2d4 se muove 6 m+, CD 13 For o prono); Piede sicuro","Ariete +5 3d4+3"],
+ goat:["Capra","0",10,"4 (1d8)","12 m",[12,10,11,2,10,5],"Carica (+1d4); Piede sicuro","Ariete +3 1d4+1"],
+ boar:["Cinghiale gigante","2",12,"42 (5d10+15)","12 m",[17,10,16,2,7,5],"Carica (+2d6, CD 13 For o prono); Implacabile (1/riposo corto resta a 1 PF)","Zanna +5 2d6+3"],
+ crab:["Granchio gigante","1/8",15,"13 (3d8)","9 m, nuotare 9 m",[13,15,11,1,9,3],"Anfibio","Chela +3 1d6+1, afferrato (CD 11)"],
+ scorp:["Scorpione gigante","3",15,"52 (7d10+14)","12 m",[15,13,15,1,9,3],"Percezione cieca 18 m","Multiattacco: 2 chele +4 1d8+2 afferra (CD 12); pungiglione +4 1d10+2 + CD 12 Cos o 4d10 veleno"],
+ quip:["Quipper","0",13,"1 (1d4-1)","nuotare 12 m",[2,16,9,1,7,2],"Frenesia di sangue; Respiro acquatico","Morso +5 1 perforante"],
+ orca:["Orca","3",12,"90 (12d12+12)","nuotare 18 m",[19,10,13,3,12,7],"Ecolocazione; Trattenere il fiato; Udito acuto","Morso +6 5d6+4"],
+ cons:["Serpente constrictor","1/4",12,"13 (2d10+2)","9 m, nuotare 9 m",[15,14,12,1,10,3],"—","Morso +4 1d6+2; stritolare +4 1d8+2, afferra (CD 14)"],
+ gcons:["Serpente constrictor gigante","2",12,"60 (8d12+8)","9 m, nuotare 9 m",[19,14,12,1,10,3],"—","Morso +6 2d6+4; stritolare +6 2d8+4, afferra (CD 16)"],
+ lizard:["Lucertola","0",10,"2 (1d4)","6 m, scalare 6 m",[2,11,10,1,8,3],"Scurovisione 9 m","Morso +0 1 perforante"],
+ giraffe:["Giraffa","1/2",11,"26 (4d12)","18 m",[16,11,16,2,14,7],"Carica (+2d6, CD 14 For o prono)","Calcio +5 1d6+3"],
+ horse:["Cavallo da sella","1/4",10,"13 (2d10+2)","18 m",[16,10,12,2,11,7],"—","Zoccoli +5 2d4+3"],
+ mast:["Mastino","1/8",12,"5 (1d8+1)","12 m",[13,14,12,3,12,7],"Udito e olfatto acuti","Morso +3 1d6+1; CD 11 For o prono"],
+ eagle:["Aquila","0",12,"3 (1d6)","3 m, volare 18 m",[6,15,10,2,14,7],"Vista acuta","Artigli +4 1d4+2"]};
+var A={Aquila:"eagle",Aries:"ggoat",Taurus:"boar",Cancer:"crab",Leo:"lion",Scorpius:"scorp",Capricornus:"goat",Pisces:"quip","Piscis Austrinus":"quip",Dorado:"quip","Ursa Major":"bear","Ursa Minor":"bbear","Canis Major":"wolf","Canis Minor":"mast",Lupus:"wolf",Lynx:"panther",Cetus:"orca",Hydra:"gcons",Hydrus:"cons",Serpens:"cons",Corvus:"raven",Lacerta:"lizard",Chamaeleon:"lizard",Camelopardalis:"giraffe",Equuleus:"horse"};
+var NM="Andromeda,Antlia,Apus,Aquarius,Aquila,Ara,Aries,Auriga,Boötes,Caelum,Camelopardalis,Cancer,Canes Venatici,Canis Major,Canis Minor,Capricornus,Carina,Cassiopeia,Centaurus,Cepheus,Cetus,Chamaeleon,Circinus,Columba,Coma Berenices,Corona Australis,Corona Borealis,Corvus,Crater,Crux,Cygnus,Delphinus,Dorado,Draco,Equuleus,Eridanus,Fornax,Gemini,Grus,Hercules,Horologium,Hydra,Hydrus,Indus,Lacerta,Leo,Leo Minor,Lepus,Libra,Lupus,Lynx,Lyra,Mensa,Microscopium,Monoceros,Musca,Norma,Octans,Ophiuchus,Orion,Pavo,Pegasus,Perseus,Phoenix,Pictor,Pisces,Piscis Austrinus,Puppis,Pyxis,Reticulum,Sagitta,Sagittarius,Scorpius,Sculptor,Scutum,Serpens,Sextans,Taurus,Telescopium,Triangulum,Triangulum Australe,Tucana,Ursa Major,Ursa Minor,Vela,Virgo,Volans,Vulpecula".split(",");
+$("all").innerHTML=NM.map(function(n,i){return '<option value="'+i+'">'+(A[n]?"🐾 ":"")+n+'</option>'}).join("");
+function all(){var n=NM[$("all").value],s=0,k;for(k=0;k<n.length;k++)s=(s*31+n.charCodeAt(k))>>>0;
+function rnd(){s=(s*1664525+1013904223)>>>0;return s/4294967296}
+var c=Math.min(9,5+Math.floor(rnd()*5)),st=[],h='<rect width="300" height="300" rx="10" fill="#070a1c"/><g class="cs" style="transform-origin:150px 150px;transform:scaleX('+(mir?-1:1)+')">';
+for(k=0;k<c;k++)st.push([40+rnd()*220,40+rnd()*220]);st.sort(function(a,b){return a[0]-b[0]});
+for(k=1;k<c;k++)h+='<line x1="'+st[k-1][0]+'" y1="'+st[k-1][1]+'" x2="'+st[k][0]+'" y2="'+st[k][1]+'" stroke="#f2b53c" stroke-opacity=".6"/>';
+st.forEach(function(p){h+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="#fff"/><circle cx="'+p[0]+'" cy="'+p[1]+'" r="9" fill="#f2b53c" opacity=".2"/>'});
+$("sky2").innerHTML=h+'</g><text x="150" y="292" text-anchor="middle" fill="#9aa3c7" font-size="12">'+(mir?"Impostore · ":"")+n+'</text>';
+$("note").textContent="Forma stilizzata: non è il disegno astronomico reale.";
+var b=B[A[n]],o;if(!b){$("beast").innerHTML='<p><small>Nessuna bestia 5e diretta associata a '+n+'.</small></p>';return}
+var ab=["FOR","DES","COS","INT","SAG","CAR"].map(function(l,i){var v=b[5][i],m=Math.floor((v-10)/2);return '<div style="text-align:center"><small>'+l+'</small><br><b>'+v+'</b> ('+(m>=0?"+":"")+m+')</div>'}).join("");
+$("beast").innerHTML='<div style="background:#0b1026;border-radius:10px;padding:12px;border-left:4px solid #f2b53c"><b style="font-size:1.1rem;color:#f2b53c">'+b[0]+'</b> <small>GS '+b[1]+'</small><br><b style="color:#6fe3a0">'+lv(b)+'</b><br>CA '+b[2]+' · PF '+b[3]+'<br>Velocità '+b[4]+'<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin:8px 0">'+ab+'</div><b>Tratti:</b> '+b[6]+'<br><b>Azioni:</b> '+b[7]+'<br><small>Dati base SRD 5e: per la Forma Selvatica controlla i limiti di GS, volo e nuoto per il tuo livello e conferma con il master.</small></div>'}
+function lv(b){var c=b[1].indexOf("/")>-1?1/parseInt(b[1].split("/")[1]):parseInt(b[1]),f=/volare/.test(b[4]),s=/nuotare/.test(b[4]),m="Forma Selvatica (Druido, livello minimo): ";
+if(c>1)return m+"non disponibile con la tabella base (max GS 1). Solo Circolo della Luna: livello "+(c<=2?6:9)+".";
+return m+(f||c>.5?8:s||c>.25?4:2)}
+$("all").onchange=all;
+/* druido delle stelle */
+var SL={1:[2],2:[3],3:[4,2],4:[4,3],5:[4,3,2],6:[4,3,3],7:[4,3,3,1],8:[4,3,3,2],9:[4,3,3,3,1],10:[4,3,3,3,2],11:[4,3,3,3,2,1],12:[4,3,3,3,2,1],13:[4,3,3,3,2,1,1],14:[4,3,3,3,2,1,1],15:[4,3,3,3,2,1,1,1],16:[4,3,3,3,2,1,1,1],17:[4,3,3,3,2,1,1,1,1],18:[4,3,3,3,3,1,1,1,1],19:[4,3,3,3,3,2,1,1,1],20:[4,3,3,3,3,2,2,1,1]};
+var SP=[`Control Flames,Create Bonfire*,Druidcraft,Frostbite,Guidance*,Gust,Infestation,Magic Stone,Mending,Mold Earth,Poison Spray,Primal Savagery,Produce Flame,Resistance*,Shape Water,Shillelagh,Thorn Whip,Thunderclap`,
+`Absorb Elements,Animal Friendship,Beast Bond*,Charm Person,Create or Destroy Water,Cure Wounds,Detect Magic*~,Detect Poison and Disease*~,Earth Tremor,Entangle*,Faerie Fire*,Fog Cloud*,Goodberry,Healing Word,Ice Knife,Jump,Longstrider,Protection from Evil and Good*,Purify Food and Drink~,Snare,Speak with Animals~,Thunderwave,Guiding Bolt`,
+`Air Bubble,Animal Messenger~,Augury~,Barkskin*,Beast Sense*~,Continual Flame,Darkvision,Dust Devil*,Earthbind*,Enhance Ability*,Enlarge/Reduce*,Find Traps,Flame Blade*,Flaming Sphere*,Gust of Wind*,Healing Spirit*,Heat Metal*,Hold Person*,Lesser Restoration,Locate Animals or Plants~,Locate Object*,Moonbeam*,Pass Without Trace*,Protection from Poison,Skywrite*~,Spike Growth*,Summon Beast*,Warding Wind*,Wither and Bloom`,
+`Aura of Vitality*,Call Lightning*,Conjure Animals*,Daylight,Dispel Magic,Elemental Weapon*,Erupting Earth,Feign Death~,Flame Arrows*,Meld into Stone~,Plant Growth,Protection from Energy*,Revivify,Sleet Storm*,Speak with Plants,Summon Fey*,Tidal Wave,Wall of Water*,Water Breathing~,Water Walk~,Wind Wall*`,
+`Blight,Charm Monster,Confusion*,Conjure Minor Elementals*,Conjure Woodland Beings*,Control Water*,Divination~,Dominate Beast*,Elemental Bane*,Fire Shield,Freedom of Movement,Giant Insect*,Grasping Vine*,Guardian of Nature*,Hallucinatory Terrain,Ice Storm,Locate Creature*,Polymorph*,Stone Shape,Stoneskin*,Summon Elemental*,Wall of Fire*,Watery Sphere*`,
+`Antilife Shell*,Awaken,Commune with Nature~,Cone of Cold,Conjure Elemental*,Contagion,Control Winds*,Geas,Greater Restoration,Insect Plague*,Maelstrom*,Mass Cure Wounds,Planar Binding,Reincarnate,Scrying*,Summon Draconic Spirit*,Transmute Rock,Tree Stride*,Wall of Stone*,Wrath of Nature*`,
+`Bones of the Earth,Conjure Fey*,Druid Grove,Find the Path*,Flesh to Stone*,Heal,Heroes' Feast,Investiture of Flame*,Investiture of Ice*,Investiture of Stone*,Investiture of Wind*,Move Earth*,Primordial Ward*,Sunbeam*,Transport via Plants,Wall of Thorns*,Wind Walk`,
+`Draconic Transformation*,Fire Storm,Mirage Arcane,Plane Shift,Regenerate,Reverse Gravity*,Symbol,Whirlwind*`,
+`Animal Shapes*,Antipathy/Sympathy,Control Weather*,Earthquake*,Feeblemind,Incendiary Cloud*,Sunburst,Tsunami*`,
+`Foresight,Shapechange*,Storm of Vengeance*,True Resurrection`];
+var SPL=SP.map(function(s){return s.split(',').map(function(n){return{n:n.replace(/[*~]/g,''),c:n.indexOf('*')>-1,r:n.indexOf('~')>-1}})});
+var S={lv:2,wis:3,ws:0,on:0,cn:0,rd:0,om:'',omr:0,rx:0,last:'',sl:[0,0,0,0,0,0,0,0,0],pr:[],cc:'',gb:0,pick:1,msg:''};
+try{var o5=JSON.parse(localStorage.getItem('imp5'));if(o5)for(var k5 in o5)S[k5]=o5[k5]}catch(e){}
+function sv(){try{localStorage.setItem('imp5',JSON.stringify(S))}catch(e){}}
+function PB(){return 2+Math.floor((S.lv-1)/4)}
+function d(n){return 1+Math.floor(Math.random()*n)}
+function slug(n){return n.toLowerCase().replace(/'/g,'').replace(/[^a-z0-9]+/g,'-')}
+function fnd(n){for(var l=0;l<10;l++)for(var j=0;j<SPL[l].length;j++)if(SPL[l][j].n==n)return{l:l,s:SPL[l][j]}}
+function act(f){S.msg='';f();sv();ren()}
+function Dset(k,v,a,b){act(()=>{S[k]=Math.max(a,Math.min(b,parseInt(v)||a))})}
+function Dcn(i){act(()=>{if(S.on&&S.lv<10)S.msg='Puoi cambiare costellazione solo all’attivazione (dal livello 10 a ogni turno).';else S.cn=i})}
+function Dstart(){act(()=>{var wx=S.lv>=20?99:2;if(S.ws>=wx)S.msg='Nessun uso di Forma Selvatica disponibile.';else{S.ws++;S.on=1;S.rd=0}})}
+function Dend(){act(()=>{S.on=0;S.rd=0})}
+function Drd(n){act(()=>{S.rd+=n;if(S.rd>=100){S.on=0;S.rd=0;S.msg='La Forma Stellare è terminata (10 minuti).'}})}
+function Dgb(){act(()=>{if(S.gb>=PB())S.msg='Guiding Bolt gratuito esaurito: usa uno slot.';else S.gb++})}
+function roll6(){S.omr=d(6);S.om=S.omr%2?'l':'w';S.rx=PB();S.last=''}
+function Dom(){act(roll6)}
+function Drx(){act(()=>{if(S.rx<1)S.msg='Nessuna reazione rimasta.';else{S.rx--;S.last=(S.om=='w'?'+':'−')+d(6)+' (tira 1d6)'}})}
+function Dsl(i,j){act(()=>{var u=S.sl[i];S.sl[i]=j<u?j:j+1})}
+function Dpick(v){act(()=>{S.pick=+v})}
+function Dadd(){act(()=>{var v=$('ps').value;if(v==='')return;var n=SPL[S.pick][+v].n;if(S.pr.indexOf(n)<0)S.pr.push(n)})}
+function Drem(i){act(()=>{S.pr.splice(i,1)})}
+function Dcc(){act(()=>{S.cc=''})}
+function Dcast(i){act(()=>{var n=S.pr[i],f=fnd(n),L=f.l,c=SL[S.lv]||[],j;if(L>0){for(j=L-1;j<c.length;j++)if(S.sl[j]<c[j])break;if(j>=c.length){S.msg='Nessuno slot disponibile per '+n+'.';return}S.sl[j]++;S.msg=n+' lanciato con slot di livello '+(j+1)+'.'}else S.msg=n+' lanciato (trucchetto).';if(f.s.c)S.cc=n})}
+function Dshort(){act(()=>{S.ws=Math.max(0,S.ws-1)})}
+function Dlong(){act(()=>{S.sl=[0,0,0,0,0,0,0,0,0];S.ws=0;S.on=0;S.rd=0;S.gb=0;S.cc='';S.last='';if(S.lv>=6)roll6();else{S.om='';S.rx=0}})}
+function ren(){S.lv=Math.max(2,C.lv);S.wis=md(C.ab[4]);var pb=PB(),sl=SL[S.lv]||[],mx=sl.length,wx=S.lv>=20?99:2,dd=S.lv>=10?'2d8':'1d8',fm=v=>v>0?'+'+v:v<0?'−'+(-v):'+0';
+if(S.pick>mx)S.pick=mx;
+var h=`<h2>Druido delle Stelle</h2><div class='row'><small>Liv. ${S.lv} · SAG ${fm(S.wis)} (si modificano nella Scheda)</small><small>Competenza +${pb}</small><button onclick='Dshort()'>Riposo breve</button><button onclick='Dlong()'>Riposo lungo</button></div>`;
+h+=`<div class='eff'><div style='border-color:#e8ecf5'>TxC incantesimi: <b>${fm(pb+S.wis+state(0))}</b> <small>(luna bianca ${fm(state(0))})</small></div><div style='border-color:#d23a3a'>CD incantesimi: <b>${8+pb+S.wis+state(1)}</b> <small>(luna rossa ${fm(state(1))})</small></div><div style='border-color:#8a74c9'>Bonus ai danni: <b>${fm(state(2))}</b> <small>(luna nera)</small></div></div>`;
+if(S.msg)h+=`<p style='color:#f2b53c;margin:8px 0 0'>${S.msg}</p>`;
+h+=`<h2 style='margin-top:14px'>Forma Stellare</h2><div class='row'>`;
+['Arciere','Calice','Drago'].forEach((n,i)=>{h+=`<button class='${S.cn===i?'on':''}' onclick='Dcn(${i})'>${n}</button>`});
+h+=(S.on?`<button onclick='Dend()'>Termina forma</button>`:`<button onclick='Dstart()'>Attiva (usa Forma Selvatica)</button>`)+`</div><div class='row'><small>Forma Selvatica usata: <b>${S.ws}/${wx>9?'∞':wx}</b></small>${S.on?`<small>· Forma attiva, round ${S.rd}/100</small><button onclick='Drd(1)'>+1 round</button>`:''}</div>`;
+var tx=[`Arciere: azione bonus, attacco a distanza con incantesimo (18 m): ${dd} + SAG danni radiosi. Puoi ripeterlo ogni turno.`,`Calice: quando lanci un incantesimo con slot che ripristina PF, tu o una creatura entro 9 m recuperate ${dd} + SAG PF.`,`Drago: nelle prove di Intelligenza, Saggezza e nei TS di Concentrazione, un d20 inferiore a 10 vale 10.`];
+h+=`<p style='font-size:.9rem;margin:4px 0'>${tx[S.cn]}</p><small>Dura 10 minuti; luce intensa 3 m + fioca 3 m; termina se sei incapacitato o muori, o con azione bonus.${S.lv>=10?' Liv. 10: cambi costellazione a ogni turno; il Drago ha volo 6 m a mezz’aria.':''}${S.lv>=14?' Liv. 14: resistenza a danni contundenti, perforanti e taglienti.':''}</small>`;
+h+=`<div class='row'><small>Mappa Stellare, Guiding Bolt gratuito: <b>${S.gb}/${pb}</b></small><button onclick='Dgb()'>Usa</button></div>`;
+h+=`<h2 style='margin-top:14px'>Presagio Cosmico</h2>`;
+if(S.lv<6)h+=`<small>Disponibile dal livello 6.</small>`;else{h+=`<div class='row'>${S.om?`<b style='font-size:1.1rem;color:${S.om=='w'?'#6fe3a0':'#ff8a8a'}'>${S.om=='w'?'Fortuna (Weal)':'Sventura (Woe)'}</b><small>d6: ${S.omr}</small>`:'<small>Non ancora tirato dopo il riposo lungo.</small>'}<button onclick='Dom()'>🎲 Tira d6</button></div>`;
+if(S.om)h+=`<div class='row'><small>Reazioni rimaste: <b>${S.rx}/${pb}</b></small><button onclick='Drx()'>Usa reazione</button><b>${S.last}</b></div><small>${S.om=='w'?'Fortuna: una creatura entro 9 m che vedi sta per fare tiro per colpire, TS o prova: con la reazione tira 1d6 e aggiungilo.':'Sventura: stessa cosa, ma sottrai il d6.'} Pari = Fortuna, dispari = Sventura.</small>`}
+h+=`<h2 style='margin-top:14px'>Slot incantesimo</h2>`;
+sl.forEach((c,i)=>{h+=`<div class='row'><small style='width:48px'>Liv. ${i+1}</small>`;for(var j=0;j<c;j++)h+=`<span onclick='Dsl(${i},${j})' style='cursor:pointer;font-size:1.5rem;color:#f2b53c'>${j<S.sl[i]?'○':'●'}</span>`;h+=`</div>`});
+h+=`<small>● disponibile, ○ usato (tocca per cambiare)</small>`;
+var np=S.pr.filter(n=>fnd(n).l>0).length,cap=Math.max(1,S.lv+S.wis);
+h+=`<h2 style='margin-top:14px'>Incantesimi preparati <small style='color:${np>cap?'#ff8a8a':'#9aa3c7'}'>(${np}/${cap} oltre ai trucchetti)</small></h2>`;
+if(S.cc)h+=`<div class='row'><b>Concentrazione: ${S.cc}</b><button onclick='Dcc()'>Interrompi</button></div>`;
+var lo='';for(var i=0;i<=mx;i++)lo+=`<option value='${i}'${S.pick==i?' selected':''}>${i?i+'° livello':'Trucchetti'}</option>`;
+var so=SPL[S.pick].map((x,j)=>S.pr.indexOf(x.n)<0?`<option value='${j}'>${x.n}${x.c?' ◎':''}${x.r?' ®':''}</option>`:'').join('');
+h+=`<div class='row'><select onchange='Dpick(this.value)' style='padding:6px;border-radius:6px;background:#0b1026;color:#e9ecf8;border:1px solid #394075'>${lo}</select><select id='ps' style='padding:6px;border-radius:6px;background:#0b1026;color:#e9ecf8;border:1px solid #394075;max-width:60%'>${so}</select><button onclick='Dadd()'>Aggiungi</button></div><small>◎ concentrazione · ® rituale · elenco dalla wiki dnd5e.wikidot.com</small>`;
+S.pr.forEach((n,i)=>{var f=fnd(n);h+=`<div class='row' style='background:#0b1026;border-radius:8px;padding:6px 8px'><span style='flex:1'><a style='color:#9fc6ff' href='https://dnd5e.wikidot.com/spell:${slug(n)}' target='_blank' rel='noopener'>${n}</a> <small>${f.l?f.l+'°':'trucchetto'}${f.s.c?' ◎':''}${f.s.r?' ®':''}</small></span><button onclick='Dcast(${i})'>Lancia</button><button onclick='Drem(${i})'>✕</button></div>`});
+$('druid').innerHTML=h}
+var _u=upd;upd=function(){_u();ren();try{rs()}catch(e){}};
+function Dtab(n){document.querySelectorAll('.t1').forEach(function(e){e.classList.toggle('hide',n!=1)});document.querySelectorAll('.t2').forEach(function(e){e.classList.toggle('hide',n!=2)});$('tb1').classList.toggle('on',n==1);$('tb2').classList.toggle('on',n==2);try{localStorage.setItem('imp5tab',n)}catch(e){}}
+/* scheda giocatore */
+var C={name:'Solomon Obara',cls:'Druido',race:'Umano',lv:2,ab:[7,17,14,12,18,14],svp:[0,0,0,1,1,0],sp:[0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0],ca:13,vel:9,hpc:17,hpt:0,hpo:'',dvu:0,ins:0,ds:[0,0],lk:0,he:9,heu:2,pt:0,pa:0,st:0,eq:'Otre\nPiume di arpia\nCarta celeste (una piuma di arpia)',att:'',lang:'Druidico, Umano, Abissale\nBravo nell’orientamento\nBorsa da erborista\nBravo con i giovani (background da insegnante)',priv:'Incantesimi\nLinguaggio druidico\nArmi leggere/medie, scudi, armi semplici (no metallo)',tal:'Fortunato'};
+try{var o6=JSON.parse(localStorage.getItem('imp5c'));if(o6)for(var k6 in o6)C[k6]=o6[k6]}catch(e){}
+function csv(){try{localStorage.setItem('imp5c',JSON.stringify(C))}catch(e){}}
+function md(v){return Math.floor((v-10)/2)}
+function fs(v){return v>=0?'+'+v:'−'+(-v)}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/'/g,'&#39;').replace(/\x22/g,'&quot;')}
+function cs(f){f();csv();rs();ren()}
+function hpa(){var c=md(C.ab[2]);return 8+c+(C.lv-1)*(5+c)}
+function Dv(e){cs(()=>{var k=e.dataset.k,v=e.type=='number'?(e.value===''?'':+e.value):e.value;if(k=='lv')v=Math.max(1,Math.min(20,+v||1));C[k]=v})}
+function Dab(e){cs(()=>{C.ab[+e.dataset.i]=Math.max(1,Math.min(30,+e.value||10))})}
+function Dtx(e){C[e.dataset.k]=e.value;csv()}
+function Dsub(n){cs(()=>{C.st=n})}
+function Dps(i){cs(()=>{C.svp[i]=1-C.svp[i]})}
+function Dsp(i){cs(()=>{C.sp[i]=(C.sp[i]+1)%3})}
+function Dc(k,j){cs(()=>{var a=k=='lk'?C.lk:C.ds[k=='s'?0:1];a=j<a?j:j+1;if(k=='lk')C.lk=a;else C.ds[k=='s'?0:1]=a})}
+function Dn(k,x){cs(()=>{C[k]=Math.max(0,(+C[k]||0)+x)})}
+function Dhp(x){cs(()=>{var hm=C.hpo===''||C.hpo==null?hpa():+C.hpo;C.hpc=Math.max(0,Math.min(hm,(+C.hpc||0)+x))})}
+function Dins(){cs(()=>{C.ins=1-C.ins})}
+var AB=['FOR','DES','COS','INT','SAG','CAR'];
+var SK=[['Acrobazia',1],['Addestrare animali',4],['Arcano',3],['Atletica',0],['Furtività',1],['Indagare',3],['Inganno',5],['Intimidire',5],['Intrattenere',5],['Intuizione',4],['Medicina',4],['Natura',3],['Percezione',4],['Persuasione',5],['Rapidità di mano',1],['Religione',3],['Scienza',3],['Sopravvivenza',4],['Storia',3],['Tecnologia',3]];
+function rs(){var pb=2+Math.floor((C.lv-1)/4),m=C.ab.map(md),hm=C.hpo===''||C.hpo==null?hpa():+C.hpo;
+var circ=(k,n,u)=>{var r='';for(var j=0;j<n;j++)r+=`<span onclick='Dc(\`${k}\`,${j})' style='cursor:pointer;font-size:1.5rem;color:#f2b53c'>${j<u?'●':'○'}</span>`;return r};
+var cn=(l,k)=>`<div class='box'><small>${l}</small><br><button onclick='Dn(\`${k}\`,-1)'>−</button> <b style='font-size:1.2rem'>${C[k]}</b> <button onclick='Dn(\`${k}\`,1)'>+</button></div>`;
+var h=`<div class='g3'><input class='w' data-k='name' value='${esc(C.name)}' onchange='Dv(this)'><input class='w' data-k='cls' value='${esc(C.cls)}' onchange='Dv(this)'><input class='w' data-k='race' value='${esc(C.race)}' onchange='Dv(this)'></div><div class='row'><label>Livello <input type='number' data-k='lv' min='1' max='20' value='${C.lv}' onchange='Dv(this)'></label><small>Bonus competenza +${pb}</small></div><div class='tabs'>`;
+['Base','Abilità','Equipaggiamento'].forEach((n,i)=>{h+=`<button class='${C.st==i?'on':''}' onclick='Dsub(${i})'>${n}</button>`});h+=`</div>`;
+if(C.st==0){h+=`<div class='g3'>`;AB.forEach((a,i)=>{h+=`<div class='box'><small>${a}</small><br><input type='number' data-i='${i}' value='${C.ab[i]}' onchange='Dab(this)'><div class='big'>${fs(m[i])}</div><small>TS ${fs(m[i]+C.svp[i]*pb)}</small> <span onclick='Dps(${i})' style='cursor:pointer;color:#f2b53c'>${C.svp[i]?'●':'○'}</span></div>`});
+h+=`</div><div class='g3'><div class='box'><small>CA</small><br><input type='number' data-k='ca' value='${C.ca}' onchange='Dv(this)'></div><div class='box'><small>Iniziativa</small><div class='big'>${fs(m[1])}</div></div><div class='box'><small>Velocità (m)</small><br><input type='number' data-k='vel' value='${C.vel}' onchange='Dv(this)'></div></div>`;
+h+=`<div class='box'><small>Punti ferita</small><div class='row' style='justify-content:center'><button onclick='Dhp(-1)'>−1</button><input type='number' data-k='hpc' value='${C.hpc}' onchange='Dv(this)'> / <input type='number' data-k='hpo' placeholder='${hpa()}' value='${C.hpo===''?hm:C.hpo}' onchange='Dv(this)'><button onclick='Dhp(1)'>+1</button><label>Temp <input type='number' data-k='hpt' value='${C.hpt}' onchange='Dv(this)'></label></div><small>Dadi vita d8: ${Math.max(0,C.lv-C.dvu)}/${C.lv}</small> <button onclick='Dn(\`dvu\`,1)'>usa</button> <button onclick='Dn(\`dvu\`,-1)'>recupera</button></div>`;
+h+=`<div class='g3'><div class='box'><small>Percezione passiva</small><div class='big'>${10+m[4]+C.sp[12]*pb}</div></div><div class='box'><small>CD incantesimi</small><div class='big'>${8+pb+m[4]+state(1)}</div></div><div class='box'><small>TxC incantesimi</small><div class='big'>${fs(pb+m[4]+state(0))}</div></div></div><small>CD e TxC includono le lune (rossa e bianca).</small>`;
+h+=`<div class='g2'><div class='box'><button class='${C.ins?'on':''}' onclick='Dins()'>Ispirazione</button></div><div class='box'><small>Fortunato (usati)</small><br>${circ('lk',3,C.lk)}</div><div class='box'><small>TS morte: successi</small><br>${circ('s',3,C.ds[0])}</div><div class='box'><small>TS morte: fallimenti</small><br>${circ('f',3,C.ds[1])}</div></div><div class='g2'><div class='box'><small>Punti eroe</small><br><button onclick='Dn(\`he\`,-1)'>−</button> <b>${C.he}</b> <button onclick='Dn(\`he\`,1)'>+</button> <small>usati ${C.heu}</small> <button onclick='Dn(\`heu\`,1)'>+</button></div><div class='box'><small>Punti paradosso (attuali)</small><br><button onclick='Dn(\`pa\`,-1)'>−</button> <b>${C.pa}</b> <button onclick='Dn(\`pa\`,1)'>+</button></div></div>`}
+else if(C.st==1){h+=`<div class='g2'>`;SK.forEach((s,i)=>{var v=m[s[1]]+C.sp[i]*pb;h+=`<div class='sk'><span>${s[0]} <small>(${AB[s[1]]})</small></span><span><b>${fs(v)}</b> <button onclick='Dsp(${i})'>${['○','●','◉'][C.sp[i]]}</button></span></div>`});h+=`</div><small>○ nessuna · ● competenza · ◉ maestria (tocca per cambiare)</small>`}
+else{[['eq','Equipaggiamento'],['att','Attacchi (armi equip.)'],['lang','Competenze e lingue'],['priv','Privilegi e tratti'],['tal','Talenti']].forEach(t=>{h+=`<div><small>${t[1]}</small><textarea data-k='${t[0]}' onchange='Dtx(this)'>${esc(C[t[0]])}</textarea></div>`});h=h.replace(/(<div><small>Equip)/,`<div class='g2'>$1`)+`</div>`}
+$('sheet').innerHTML=h}
+function Dtab(n){[1,2,3].forEach(function(i){document.querySelectorAll('.t'+i).forEach(function(e){e.classList.toggle('hide',n!=i)});var b=$('tb'+i);if(b)b.classList.toggle('on',n==i)});try{localStorage.setItem('imp5tab',n)}catch(e){}}
+build();sky();all();ren();rs();
+try{Dtab(+localStorage.getItem('imp5tab')||1)}catch(e){}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
+</script></body></html>
